@@ -30,6 +30,7 @@ export const prerender = false;
       <div class="mt-8 grid">
         <button
           type="button"
+          id="hs-hero-button-google-2"
           class="py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-slate-300 bg-slate-100 text-slate-800 shadow-sm hover:bg-slate-50"
         >
           <svg
@@ -130,12 +131,17 @@ export const prerender = false;
 <!-- End Hero -->
 
 <script>
+  import { firebase } from "@/firebase/config";
   import { actions } from "astro:actions";
+  import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
   import Swal from "sweetalert2";
 
   const form = document.querySelector("form") as HTMLFormElement;
   const buttonSubmit = document.querySelector(
     "#hs-hero-submit-2"
+  ) as HTMLButtonElement;
+  const buttonGoogle = document.querySelector(
+    "#hs-hero-button-google-2"
   ) as HTMLButtonElement;
 
   form.addEventListener("submit", async (e) => {
@@ -171,5 +177,30 @@ export const prerender = false;
       return;
     }
     window.location.replace("/protected");
+  });
+
+  buttonGoogle.addEventListener("click", async () => {
+    buttonGoogle.setAttribute("disabled", "disabled");
+
+    // Set provider
+    const provider = new GoogleAuthProvider();
+    try {
+      //! Firts step: Get the credentials from client side
+      const credentials = await signInWithPopup(firebase.auth, provider);
+
+      //!!! Second step: Verify credentials in server side. NOTE: Don't forget do this step never.
+
+      const { error } = await actions.loginGoogle(credentials);
+
+      if (error) {
+        alert(error.message);
+        buttonGoogle.removeAttribute("disabled");
+        return;
+      }
+
+      window.location.replace("/protected");
+    } catch (error) {
+      console.log(error);
+    }
   });
 </script>

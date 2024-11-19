@@ -1,3 +1,9 @@
+---
+const { isLoggedIn } = Astro.locals;
+
+export const prerender = false;
+---
+
 <header
   class="relative flex flex-wrap sm:justify-start sm:flex-nowrap w-full bg-slate-800 text-sm py-3"
 >
@@ -86,19 +92,35 @@
           href="/"
           aria-current="page">Home</a
         >
-        <a
-          class="font-medium text-slate-300 hover:text-slate-400 focus:outline-none"
-          href="/login">Sign in</a
-        >
-        <a
-          class="font-medium text-slate-300 hover:text-slate-400 focus:outline-none"
-          href="/protected">Protected</a
-        >
-        <a
-          class="font-medium text-slate-300 hover:text-slate-400 focus:outline-none"
-          id="logout"
-          href="#">Logout</a
-        >
+
+        {
+          isLoggedIn && (
+            <a
+              class="font-medium text-slate-300 hover:text-slate-400 focus:outline-none"
+              href="/protected"
+            >
+              Protected
+            </a>
+          )
+        }
+        {
+          !isLoggedIn ? (
+            <a
+              class="font-medium text-slate-300 hover:text-slate-400 focus:outline-none"
+              href="/login"
+            >
+              Sign in
+            </a>
+          ) : (
+            <a
+              class="font-medium text-slate-300 hover:text-slate-400 focus:outline-none"
+              id="logout"
+              href="#"
+            >
+              Logout
+            </a>
+          )
+        }
       </div>
     </div>
   </nav>

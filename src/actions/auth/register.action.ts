@@ -1,7 +1,7 @@
 import { firebase } from '@/firebase/config';
 import { defineAction } from 'astro:actions';
 import { z } from 'astro:schema';
-import { createUserWithEmailAndPassword, type AuthError } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile, type AuthError } from 'firebase/auth';
 
 
 export const registerUser = defineAction({
@@ -32,10 +32,19 @@ export const registerUser = defineAction({
 
       const user = await createUserWithEmailAndPassword(firebase.auth, email, password);
 
-      // Update name user
+      // Update name user(displayName)
+
+     updateProfile(firebase.auth.currentUser!, {
+      displayName: name
+     })
 
 
-      // check mail
+      //  Mail verification
+
+      await sendEmailVerification(firebase.auth.currentUser!, {
+        url: `${import.meta.env.WEBSITE_URL}/protected?emailVerified=true`,
+      });
+
       
     } catch (error) {      
       
